@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LISMA STUDIOS</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* Add some styles for the progress bar */
+        .progress-container {
+            width: 100%;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            height: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #4caf50;
+            border-radius: 5px;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <img src="media/logo.png" alt="Logo" class="logo" />
+            <ul>
+                <li><a href="#">HOME</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+                <li><a href="spec.html">OUR BEATS</a></li>
+            </ul>
+        </div>
+        <div class="content">
+            <div class="left-col">
+                <h1>ADE <br />MOFE <br />SOUNDS</h1>
+            </div>
+            <div class="right-col">
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <br>
+                <img src="media/play.png" id="icon" />
+                <div class="controls">
+                    <button id="prev">Prev</button>
+                    <button id="repeat">Repeat</button>
+                    <button id="shuffle">Shuffle</button>
+                    <button id="next">Next</button>
+                </div>
+                <p id="song-name"></p>
+                
+            </div>
+        </div>
+    </div>
+
+    <audio id="mySong">
+        <source src="redeem originalss.wav" type="audio/wav" />
+    </audio>
+
+    <script>
+        const songs = [
+            { src: "redeem originalss.wav", type: "audio/wav" },
+            { src: "FREEBEAT-SHOW-LOVE-AFROBEAT-PROD-BY-PFIZZYDEBEATZKILLA.mp3"},
+            { src: "Freebeat-Savage-prod-by-sdbeatz.mp3"},
+            { src: "FREEBEAT-AMAPIANO-BAND-BAND-PROD-BY-PFIZZYDEBEATZKILLA.mp3"},
+            { src: "Free-Beat-Cast_-Davido-X-Fireboy-DML-Type-Beat-Prod-By-Tite-Tunez.mp3"},
+
+            { src: "[KB] - Shaker Loop 1.wav", type: "audio/wav" },
+            
+        ];
+
+        let currentSongIndex = 0;
+        const mySong = document.getElementById("mySong");
+        const icon = document.getElementById("icon");
+        const prevButton = document.getElementById("prev");
+        const nextButton = document.getElementById("next");
+        const repeatButton = document.getElementById("repeat");
+        const shuffleButton = document.getElementById("shuffle");
+        const songName = document.getElementById("song-name");
+        const progressBar = document.getElementById("progress-bar");
+        const progressContainer = document.getElementById("progress-container");
+        let isRepeating = false;
+        let isShuffling = false;
+
+        function loadSong(index) {
+            mySong.src = songs[index].src;
+            mySong.type = songs[index].type;
+            mySong.load();
+            songName.textContent = `Now playing: ${songs[index].src.split("/").pop()}`;
+        }
+
+        function playPauseSong() {
+            if (mySong.paused) {
+                mySong.play();
+                icon.src = "media/pause.png";
+            } else {
+                mySong.pause();
+                icon.src = "media/play.png";
+            }
+        }
+
+        function prevSong() {
+            currentSongIndex = currentSongIndex > 0 ? currentSongIndex - 1 : songs.length - 1;
+            loadSong(currentSongIndex);
+            mySong.play();
+            icon.src = "media/pause.png";
+        }
+
+        function nextSong() {
+            currentSongIndex = currentSongIndex < songs.length - 1 ? currentSongIndex + 1 : 0;
+            loadSong(currentSongIndex);
+            mySong.play();
+            icon.src = "media/pause.png";
+        }
+
+        function toggleRepeat() {
+            isRepeating = !isRepeating;
+            repeatButton.style.backgroundColor = isRepeating ? "#f2f2f2" : "#fff";
+            mySong.loop = isRepeating;
+        }
+
+        function shuffleSong() {
+            isShuffling = !isShuffling;
+            shuffleButton.style.backgroundColor = isShuffling ? "#f2f2f2" : "#fff";
+            if (isShuffling) {
+                currentSongIndex = Math.floor(Math.random() * songs.length);
+                loadSong(currentSongIndex);
+                mySong.play();
+                icon.src = "media/pause.png";
+            }
+        }
+
+        function updateProgress() {
+            const { duration, currentTime } = mySong;
+            const progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+        }
+
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = mySong.duration;
+            mySong.currentTime = (clickX / width) * duration;
+        }
+
+        icon.onclick = playPauseSong;
+        prevButton.onclick = prevSong;
+        nextButton.onclick = nextSong;
+        repeatButton.onclick = toggleRepeat;
+        shuffleButton.onclick = shuffleSong;
+        mySong.addEventListener("timeupdate", updateProgress);
+        progressContainer.addEventListener("click", setProgress);
+
+        // Automatically play the next song when the current one ends
+        mySong.onended = nextSong;
+
+        // Initial load
+        loadSong(currentSongIndex);
+    </script>
+</body>
+</html>
